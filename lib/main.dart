@@ -1,7 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'pages/main_page.dart';
+import 'providers/theme_provider.dart';
 
 void main() {
-  runApp(const MainApp());
+  /* load and set theme */
+  ThemeProvider themeProvider = ThemeProvider();
+  themeProvider.setLightTheme();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeProvider>(
+          create: (context) => themeProvider,
+        ),
+      ],
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -9,9 +26,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
+      theme: Provider.of<ThemeProvider>(context).themeData,
+      home: const MainPage(),
     );
   }
 }
