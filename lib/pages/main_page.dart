@@ -21,14 +21,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppbarComponent(title: 'Chords'),
       drawer: DrawerComponent(),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            NeckComponent(scale: 0.5),
-            Center(child: Text(MediaQuery.sizeOf(context).width.toString())),
-          ],
-        ),
-      ),
+      body: SafeArea(child: Stack(children: [NeckComponent(scale: 1.0)])),
     );
   }
 }

@@ -3,17 +3,25 @@ import 'package:provider/provider.dart';
 
 import 'pages/main_page.dart';
 import 'providers/theme_provider.dart';
+import 'providers/diagram_provider.dart';
+
+import 'data/tuning.dart';
 
 void main() {
   /* load and set theme */
   ThemeProvider themeProvider = ThemeProvider();
   themeProvider.setLightTheme();
+  DiagramProvider diagramProvider = DiagramProvider(tuning: Tuning());
+  diagramProvider.majorScale().setRelative(true);
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider<ThemeProvider>(
           create: (context) => themeProvider,
+        ),
+        ChangeNotifierProvider<DiagramProvider>(
+          create: (context) => diagramProvider,
         ),
       ],
       child: const MainApp(),

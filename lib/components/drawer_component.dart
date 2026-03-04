@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../pages/main_page.dart';
+import 'package:provider/provider.dart';
+import '../providers/diagram_provider.dart';
 
 class DrawerComponent extends StatelessWidget {
   const DrawerComponent({super.key});
@@ -12,6 +13,11 @@ class DrawerComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DiagramProvider diagram = Provider.of<DiagramProvider>(
+      context,
+      listen: false,
+    );
+
     Future<void> showAboutDialog(PackageInfo info) async {
       return showDialog<void>(
         context: context,
@@ -93,19 +99,67 @@ class DrawerComponent extends StatelessWidget {
             children: [
               /*SizedBox(height: 10),*/
               ListTile(
-                leading: Icon(Icons.home),
-                title: Text('Home'),
+                leading: Icon(
+                  diagram.relative ? Icons.toggle_on : Icons.toggle_off,
+                ),
+                title: Text('Toggle relative'),
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (context) => const MainPage(),
-                    ),
-                  );
+                  diagram.toggleRelative();
                 },
               ),
-
+              ListTile(
+                leading: Icon(Icons.my_location),
+                title: Text('Next is root'),
+                onTap: () {
+                  Navigator.pop(context);
+                  diagram.nextIsRoot();
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.move_down),
+                title: Text('Move capo down'),
+                onTap: () {
+                  Navigator.pop(context);
+                  diagram.moveCapoDown();
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.delete),
+                title: Text('Reset diagram'),
+                onTap: () {
+                  Navigator.pop(context);
+                  DiagramProvider diagram = Provider.of<DiagramProvider>(
+                    context,
+                    listen: false,
+                  );
+                  diagram.reset();
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.music_note),
+                title: Text('Major scale'),
+                onTap: () {
+                  Navigator.pop(context);
+                  DiagramProvider diagram = Provider.of<DiagramProvider>(
+                    context,
+                    listen: false,
+                  );
+                  diagram.majorScale();
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.music_note),
+                title: Text('Minor natural scale'),
+                onTap: () {
+                  Navigator.pop(context);
+                  DiagramProvider diagram = Provider.of<DiagramProvider>(
+                    context,
+                    listen: false,
+                  );
+                  diagram.minorNaturalScale();
+                },
+              ),
               /*SizedBox(height: 10),
               Divider(),
               SizedBox(height: 10),*/
