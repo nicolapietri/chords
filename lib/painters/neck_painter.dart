@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 
 class NeckPainter extends CustomPainter {
-  double width;
-  double height;
+  Color color;
+  Size canvasSize = Size.zero;
 
-  NeckPainter(this.width, this.height);
+  NeckPainter(this.color);
 
-  Offset xy(double xp, double yp) {
-    return Offset(xp * width / 100.0, yp * height / 100.0);
+  Size getSize() {
+    return canvasSize;
+  }
+
+  Offset xy(double xp, double yp, Size size) {
+    return Offset(xp * size.width / 100.0, yp * size.height / 100.0);
   }
 
   List getLines() {
-    List lines = [];
+    List<Map<String, double>> lines = [];
     int i;
 
     for (i = 0; i < 8; i++) {
@@ -29,14 +33,16 @@ class NeckPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.black54
+      ..color = color
       ..strokeWidth = 1.0
       ..strokeCap = StrokeCap.round;
 
+    canvasSize = size;
+
     for (Map map in getLines()) {
       canvas.drawLine(
-        xy(map['x1'], map['y1']),
-        xy(map['x2'], map['y2']),
+        xy(map['x1'], map['y1'], size),
+        xy(map['x2'], map['y2'], size),
         paint,
       );
     }

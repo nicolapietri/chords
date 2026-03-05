@@ -125,18 +125,18 @@ class DiagramProvider extends ChangeNotifier {
     double width,
     double height,
   ) {
-    int tapperString = 6 - ((offset.dx / width * 100.0 - 8) / 14).toInt();
-    if (tapperString < 1 || tapperString > 6) return this;
+    int tappedString = 6 - ((offset.dx / width * 100.0 - 8) / 14).toInt();
+    if (tappedString < 1 || tappedString > 6) return this;
 
-    int tapperFret = ((offset.dy / height * 100.0 - 10) / 10).toInt();
-    if (tapperFret < 1 || tapperFret > 7) return this;
+    int tappedFret = ((offset.dy / height * 100.0 - 10) / 10).toInt();
+    if (tappedFret < 1 || tappedFret > 7) return this;
 
-    if (!bulletExists(tapperString, tapperFret)) {
-      items.add(Bullet(string: tapperString, fret: tapperFret));
+    if (!bulletExists(tappedString, tappedFret)) {
+      items.add(Bullet(string: tappedString, fret: tappedFret));
       /* set next root */
       if (nextRoot == '?') {
         nextRoot = '';
-        root = tuning.getNote(tapperString, tapperFret);
+        root = tuning.getNote(tappedString, tappedFret);
       }
     }
 
@@ -172,8 +172,6 @@ class DiagramProvider extends ChangeNotifier {
       bullet.root = tuning.getInterval(bullet.string, bullet.fret, root) == 'R';
     }
     /* delete marked bullets */
-    for (Bullet bullet in items) {
-      if (bullet.text == 'x') items.remove(bullet);
-    }
+    items.removeWhere((bullet) => bullet.text == 'x');
   }
 }

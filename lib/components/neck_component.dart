@@ -5,9 +5,9 @@ import '../painters/neck_painter.dart';
 import '../providers/diagram_provider.dart';
 
 class NeckComponent extends StatelessWidget {
-  const NeckComponent({super.key, required this.scale});
+  const NeckComponent({super.key, required this.size});
 
-  final double scale;
+  final Size size;
 
   @override
   Widget build(BuildContext context) {
@@ -15,33 +15,32 @@ class NeckComponent extends StatelessWidget {
       context,
       listen: false,
     );
-    double margin = 20 * scale;
-    double width = MediaQuery.sizeOf(context).width * scale;
-    double height = MediaQuery.sizeOf(context).height * scale;
 
-    return Container(
-      width: width - margin * 2,
-      height: height - margin * 2,
-      margin: EdgeInsets.all(margin),
+    return SizedBox(
+      width: size.width,
+      height: size.height,
       child: Consumer<DiagramProvider>(
         builder: (context, model, widget) => Stack(
           children: [
             GestureDetector(
               child: CustomPaint(
-                painter: NeckPainter(width - margin * 2, height - margin * 2),
-                size: Size.infinite,
+                painter: NeckPainter(Theme.of(context).colorScheme.onSurface),
+                size: size,
               ),
+
               onTapDown: (details) {
                 diagram.addBulletAtOffset(
                   details.localPosition,
-                  width - margin * 2,
-                  height - margin * 2,
+                  size.width,
+                  size.height - kBottomNavigationBarHeight,
                 );
               },
             ),
             DiagramComponent(
-              width: width - margin * 2,
-              height: height - margin * 2,
+              size: Size(
+                size.width,
+                size.height - kBottomNavigationBarHeight - 11,
+              ),
             ),
           ],
         ),

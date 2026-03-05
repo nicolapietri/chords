@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/appbar_component.dart';
+import '../components/bottom_appbar_component.dart';
 import '../components/drawer_component.dart';
 import '../components/neck_component.dart';
 
@@ -18,10 +19,19 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    AppbarComponent appBar = AppbarComponent(title: 'Chords');
+    BottomAppBarComponent bottomAppBar = BottomAppBarComponent();
+    double safeWidth = MediaQuery.sizeOf(context).width;
+    double safeHeight =
+        MediaQuery.sizeOf(context).height -
+        appBar.preferredSize.height -
+        kBottomNavigationBarHeight;
+
     return Scaffold(
-      appBar: AppbarComponent(title: 'Chords'),
+      appBar: appBar,
       drawer: DrawerComponent(),
-      body: SafeArea(child: Stack(children: [NeckComponent(scale: 1.0)])),
+      body: SafeArea(child: NeckComponent(size: Size(safeWidth, safeHeight))),
+      bottomNavigationBar: bottomAppBar,
     );
   }
 }

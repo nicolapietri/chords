@@ -78,10 +78,6 @@ class DrawerComponent extends StatelessWidget {
                     height: 48,
                     child: Image.asset('assets/icons/icon.png'),
                   ),
-                  // Icon(
-                  //   Icons.home,
-                  //   color: Theme.of(context).colorScheme.primary,
-                  // ),
                   SizedBox(width: 10),
                   Text(
                     'Chords menu',
@@ -99,9 +95,7 @@ class DrawerComponent extends StatelessWidget {
             children: [
               /*SizedBox(height: 10),*/
               ListTile(
-                leading: Icon(
-                  diagram.relative ? Icons.toggle_on : Icons.toggle_off,
-                ),
+                leading: Icon(Icons.cameraswitch),
                 title: Text('Toggle relative'),
                 onTap: () {
                   Navigator.pop(context);
@@ -129,10 +123,6 @@ class DrawerComponent extends StatelessWidget {
                 title: Text('Reset diagram'),
                 onTap: () {
                   Navigator.pop(context);
-                  DiagramProvider diagram = Provider.of<DiagramProvider>(
-                    context,
-                    listen: false,
-                  );
                   diagram.reset();
                 },
               ),
@@ -141,10 +131,6 @@ class DrawerComponent extends StatelessWidget {
                 title: Text('Major scale'),
                 onTap: () {
                   Navigator.pop(context);
-                  DiagramProvider diagram = Provider.of<DiagramProvider>(
-                    context,
-                    listen: false,
-                  );
                   diagram.majorScale();
                 },
               ),
@@ -153,16 +139,12 @@ class DrawerComponent extends StatelessWidget {
                 title: Text('Minor natural scale'),
                 onTap: () {
                   Navigator.pop(context);
-                  DiagramProvider diagram = Provider.of<DiagramProvider>(
-                    context,
-                    listen: false,
-                  );
                   diagram.minorNaturalScale();
                 },
               ),
-              /*SizedBox(height: 10),
+              SizedBox(height: 10),
               Divider(),
-              SizedBox(height: 10),*/
+              SizedBox(height: 10),
               ListTile(
                 leading: Icon(Icons.info),
                 title: Text('About'),
