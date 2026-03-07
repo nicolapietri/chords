@@ -106,7 +106,7 @@ class DiagramProvider extends ChangeNotifier {
   }
 
   DiagramProvider moveCapoDown() {
-    tuning.capo = (tuning.capo + 3) % 15;
+    tuning.capo = (tuning.capo + 1) % 15;
     _resetAlternatives();
     _updateBullets();
     notifyListeners();
@@ -120,23 +120,51 @@ class DiagramProvider extends ChangeNotifier {
     return this;
   }
 
-  DiagramProvider addBulletAtOffset(
-    Offset offset,
-    double width,
-    double height,
-  ) {
-    int tappedString = 6 - ((offset.dx / width * 100.0 - 8) / 14).toInt();
-    if (tappedString < 1 || tappedString > 6) return this;
-
-    int tappedFret = ((offset.dy / height * 100.0 - 10) / 10).toInt();
-    if (tappedFret < 1 || tappedFret > 7) return this;
-
+  DiagramProvider addBulletAtFret(int tappedString, int tappedFret) {
     if (!bulletExists(tappedString, tappedFret)) {
-      items.add(Bullet(string: tappedString, fret: tappedFret));
+      Bullet newBullet = Bullet(string: tappedString, fret: tappedFret);
+      /*if (relative && root != '') {
+        /* search lower octave of root */
+        int lowerOctave = 6;
+        int octave;
+        for (Bullet bullet in items) {
+          if (bullet.root) {
+            octave = tuning.getOctave(bullet.string, bullet.fret);
+            if (octave < lowerOctave) lowerOctave = octave;
+          }
+        }
+        /* compare with this new bullet's octave */
+        octave = tuning.getOctave(newBullet.string, newBullet.fret);
+        if (octave > lowerOctave) {
+          /* search for bullet extensions */
+          bool found = false;
+          for (int alternative = 0; alternative < 5; alternative++) {
+            if (!found) {
+              newBullet.alternative = alternative;
+              String altText = tuning.getIntervalText(newBullet, root);
+              if (altText.contains('9') ||
+                  altText.contains('11') ||
+                  altText.contains('13')) {
+                found = true;
+              }
+            }
+          }
+          if (!found) newBullet.alternative = 0;
+        }
+      }
+      */
+      items.add(newBullet);
       /* set next root */
       if (nextRoot == '?') {
         nextRoot = '';
         root = tuning.getNote(tappedString, tappedFret);
+      }
+    } else {
+      for (Bullet bullet in items) {
+        if (bullet.string == tappedString && bullet.fret == tappedFret) {
+          rotateBulletAlternative(bullet);
+          return this;
+        }
       }
     }
 

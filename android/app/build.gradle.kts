@@ -28,6 +28,10 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        //start NP
+        setProperty("archivesBaseName", "Chords-$versionName-$versionCode")
+        //stop NP
     }
 
     buildTypes {

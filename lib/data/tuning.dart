@@ -99,6 +99,21 @@ class Tuning {
     return alternatives[bullet.alternative];
   }
 
+  int getOctave(int string, int fret) {
+    int octave;
+    if (string == 6 || string == 5) {
+      octave = 2;
+    } else if (string == 4 || string == 3 || string == 2) {
+      octave = 3;
+    } else {
+      octave = 4;
+    }
+    for (int i = 1; i <= fret; i++) {
+      if (getNote(string, i) == 'c') octave++;
+    }
+    return octave;
+  }
+
   String getInterval(int string, int fret, String rootNote) {
     if (rootNote == '') return '';
     int start = _notes.indexOf(rootNote);

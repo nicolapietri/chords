@@ -1,8 +1,8 @@
-import 'package:chords/components/diagram_component.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../painters/neck_painter.dart';
 import '../providers/diagram_provider.dart';
+import 'fretboard_component.dart';
+import 'diagram_component.dart';
 
 class NeckComponent extends StatelessWidget {
   const NeckComponent({super.key, required this.size});
@@ -11,9 +11,9 @@ class NeckComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DiagramProvider diagram = Provider.of<DiagramProvider>(
-      context,
-      listen: false,
+    Size canvasSize = Size(
+      size.width,
+      size.height - kBottomNavigationBarHeight - 11,
     );
 
     return SizedBox(
@@ -22,26 +22,17 @@ class NeckComponent extends StatelessWidget {
       child: Consumer<DiagramProvider>(
         builder: (context, model, widget) => Stack(
           children: [
-            GestureDetector(
-              child: CustomPaint(
-                painter: NeckPainter(Theme.of(context).colorScheme.onSurface),
-                size: size,
-              ),
-
-              onTapDown: (details) {
+            FretboardComponent(
+              size: canvasSize,
+              /*onTap: (position) {
                 diagram.addBulletAtOffset(
-                  details.localPosition,
+                  position,
                   size.width,
                   size.height - kBottomNavigationBarHeight,
                 );
-              },
+              },*/
             ),
-            DiagramComponent(
-              size: Size(
-                size.width,
-                size.height - kBottomNavigationBarHeight - 11,
-              ),
-            ),
+            DiagramComponent(size: canvasSize),
           ],
         ),
       ),
