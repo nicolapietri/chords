@@ -1,3 +1,5 @@
+import 'package:chords/providers/diagram_provider.dart';
+
 import 'bullet.dart';
 
 class Tuning {
@@ -53,7 +55,7 @@ class Tuning {
   ];
 
   final List _intervals = [
-    'R',
+    '1',
     'b2',
     '2',
     'b3',
@@ -99,6 +101,19 @@ class Tuning {
     return alternatives[bullet.alternative];
   }
 
+  int getRootOctave(DiagramProvider diagram) {
+    /* search lower octave of root */
+    int lowerOctave = 6;
+    int octave;
+    for (Bullet bullet in diagram.items) {
+      if (bullet.root) {
+        octave = diagram.tuning.getOctave(bullet.string, bullet.fret);
+        if (octave < lowerOctave) lowerOctave = octave;
+      }
+    }
+    return lowerOctave;
+  }
+
   int getOctave(int string, int fret) {
     int octave;
     if (string == 6 || string == 5) {
@@ -121,6 +136,50 @@ class Tuning {
     return _intervals[(end - start) % 12];
   }
 
+  List<String> getAllIntervals(DiagramProvider diagram) {
+    if (diagram.root == '') return [];
+
+    int rootOctave = getRootOctave(diagram);
+
+    List<String> all = ['1'];
+    String interval;
+    for (Bullet bullet in diagram.items) {
+      if (bullet.fret > 0 ||
+          (bullet.fret == 0 && bullet.alternative == 0 && capo == 0)) {
+        int octave = getOctave(bullet.string, bullet.fret);
+
+        interval = getInterval(bullet.string, bullet.fret, diagram.root);
+        if (!all.contains(interval) && interval != '') {
+          /* check for 9th extensions */
+          if (interval == '2' && octave > rootOctave) interval = '9';
+          if (interval == 'b2' && octave > rootOctave) interval = 'b9';
+          if (interval == 'b3' && all.contains('3')) interval = '#9';
+          /* check for 11th extensions */
+          if (interval == '4' && octave > rootOctave) interval = '11';
+          if (interval == 'b5' && octave > rootOctave) interval = '#11';
+          all.add(interval);
+        } else {
+          /* check for 9th extensions */
+          if (interval == 'b2' && all.contains('b2')) all.add('b9');
+          if (interval == '2' && all.contains('2')) all.add('9');
+          if (all.contains('3') || all.contains('b3')) {
+            if (interval == 'b3' && all.contains('b3')) all.add('#9');
+          }
+          /* check for 11th extensions */
+          if (interval == '4' && all.contains('b2')) all.add('b9');
+        }
+      }
+    }
+    all.sort((a, b) {
+      return int.parse(a.replaceAll(RegExp(r'[b#]'), '')) <
+              int.parse(b.replaceAll(RegExp(r'[b#]'), ''))
+          ? -1
+          : 1;
+    });
+
+    return all;
+  }
+
   String getIntervalText(Bullet bullet, String rootNote) {
     int intervalIndex = _intervals.indexOf(
       getInterval(bullet.string, bullet.fret, rootNote),
@@ -132,5 +191,26 @@ class Tuning {
     }
 
     return alternatives[bullet.alternative];
+  }
+
+  String getChordNameFromIntervals(List<String> intervals) {
+    String mode = intervals.contains('b3') ? 'm' : '';
+    String seven = intervals.contains('b7')
+        ? '7'
+        : (intervals.contains('7') ? 'maj7' : '');
+    // extended with 9
+    if (intervals.contains('b7') && intervals.contains('9')) {
+      seven = '9';
+    }
+    if (intervals.contains('7') && intervals.contains('9')) {
+      seven = 'maj9';
+    }
+    // extended with 11
+    if (intervals.contains('b7') &&
+        intervals.contains('9') &&
+        intervals.contains('11')) {
+      seven = '11';
+    }
+    return "$mode$seven";
   }
 }

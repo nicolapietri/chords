@@ -33,6 +33,11 @@ class DiagramComponent extends StatelessWidget {
       listen: false,
     );
 
+    List<String> allIntervals = diagram.tuning.getAllIntervals(diagram);
+    String chordName =
+        diagram.root.toUpperCase() +
+        diagram.tuning.getChordNameFromIntervals(allIntervals);
+
     return Stack(
       children: [
         Positioned(
@@ -58,13 +63,14 @@ class DiagramComponent extends StatelessWidget {
                 child: SizedBox(width: px(2) - 1, height: py(2) - 3),
               ),
             ),
-        ...diagram.items.map((e) {
+        /* draw normal bullets */
+        ...diagram.items.where((bullet) => bullet.fret > 0).map((e) {
           var fillColor = e.root
               ? Colors.red.shade900
               : (e.filled ? Colors.black87 : Colors.white);
-          var borderColor = e.filled ? fillColor : Colors.black87;
+          var borderColor = (e.filled || e.root) ? fillColor : Colors.black87;
           double borderWidth = 4;
-          var textColor = e.filled ? Colors.white : Colors.black87;
+          var textColor = (e.filled || e.root) ? Colors.white : Colors.black87;
 
           /* special for filled dots in dark mode */
           if (Theme.of(context).colorScheme.brightness == Brightness.dark) {
@@ -100,9 +106,28 @@ class DiagramComponent extends StatelessWidget {
             ),
           );
         }),
+        /* draw capo bullets */
+        ...diagram.items
+            .where((bullet) => bullet.fret == 0 && diagram.tuning.capo == 0)
+            .map((e) {
+              return Positioned(
+                left:
+                    px(left + 9 - (e.string - 1) * 2) +
+                    (px(2) - radius() * 1.5) / 2,
+                top: py(top + (e.fret - 1) * 2) + (py(2) - radius() * 2) * 1.3,
+                child: GestureDetector(
+                  child: Icon(
+                    e.alternative == 0 ? Icons.circle_outlined : Icons.close,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    size: radius() * 1.5,
+                  ),
+                  onTap: () => diagram.rotateBulletAlternative(e),
+                ),
+              );
+            }),
         /* clickable grid */
         for (int string = 1; string <= 6; string++)
-          for (int fret = 1; fret <= frets; fret++)
+          for (int fret = 0; fret <= frets; fret++)
             Positioned(
               left: px(left + 9 - (string - 1) * 2),
               top: py(top + (fret - 1) * 2),
@@ -115,6 +140,41 @@ class DiagramComponent extends StatelessWidget {
                 onTap: () => diagram.addBulletAtFret(string, fret),
               ),
             ),
+        /* intervals list */
+        Positioned(
+          left: px(left),
+          top: py(top + frets * 2 + 1),
+          child: SizedBox(
+            width: px(10),
+            child: Center(
+              child: Text(
+                allIntervals.isEmpty
+                    ? ''
+                    : allIntervals.reduce((a, b) => "$a $b"),
+                style: TextStyle(
+                  fontSize: fontSize * 0.9,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: px(left),
+          top: py(1),
+          child: SizedBox(
+            width: px(10),
+            child: Center(
+              child: Text(
+                chordName,
+                style: TextStyle(
+                  fontSize: fontSize * 1.5,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

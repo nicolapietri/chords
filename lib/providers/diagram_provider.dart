@@ -121,6 +121,8 @@ class DiagramProvider extends ChangeNotifier {
   }
 
   DiagramProvider addBulletAtFret(int tappedString, int tappedFret) {
+    if (tuning.capo > 1 && tappedFret == 0) return this;
+
     if (!bulletExists(tappedString, tappedFret)) {
       Bullet newBullet = Bullet(string: tappedString, fret: tappedFret);
       /*if (relative && root != '') {
@@ -188,7 +190,11 @@ class DiagramProvider extends ChangeNotifier {
 
   void _updateBullets() {
     for (Bullet bullet in items) {
-      if (!relative) {
+      if (bullet.fret == 0) {
+        bullet.text = (tuning.capo > 1
+            ? 'x'
+            : (bullet.alternative > 1 ? 'x' : ''));
+      } else if (!relative) {
         bullet.text = tuning.getNoteText(bullet);
       } else if (root == '') {
         bullet.text = bullet.alternative > 0 ? 'x' : '';
@@ -197,9 +203,22 @@ class DiagramProvider extends ChangeNotifier {
       }
       bullet.filled =
           (!bullet.text.contains('b') && !bullet.text.contains('#'));
-      bullet.root = tuning.getInterval(bullet.string, bullet.fret, root) == 'R';
+      bullet.root = tuning.getInterval(bullet.string, bullet.fret, root) == '1';
     }
     /* delete marked bullets */
     items.removeWhere((bullet) => bullet.text == 'x');
+
+    /* sort bullets */
+    items.sort((a, b) {
+      if (a.string < b.string) return 1;
+      if (a.string > b.string) return -1;
+      return (a.fret < b.fret ? 1 : -1);
+    });
+    print("---------------------------");
+    for (Bullet bullet in items) {
+      print(
+        "${bullet.string}:${bullet.fret} ${bullet.text} ${bullet.root ? '(R)' : ''} ${bullet.filled ? 'filled' : ''}",
+      );
+    }
   }
 }
