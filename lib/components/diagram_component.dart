@@ -33,7 +33,7 @@ class DiagramComponent extends StatelessWidget {
       listen: false,
     );
 
-    List<String> allIntervals = diagram.tuning.getAllIntervals(diagram);
+    List<String> allIntervals = diagram.getAllIntervals();
     String chordName =
         diagram.root.toUpperCase() +
         diagram.tuning.getChordNameFromIntervals(allIntervals);

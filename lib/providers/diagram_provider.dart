@@ -125,36 +125,7 @@ class DiagramProvider extends ChangeNotifier {
 
     if (!bulletExists(tappedString, tappedFret)) {
       Bullet newBullet = Bullet(string: tappedString, fret: tappedFret);
-      /*if (relative && root != '') {
-        /* search lower octave of root */
-        int lowerOctave = 6;
-        int octave;
-        for (Bullet bullet in items) {
-          if (bullet.root) {
-            octave = tuning.getOctave(bullet.string, bullet.fret);
-            if (octave < lowerOctave) lowerOctave = octave;
-          }
-        }
-        /* compare with this new bullet's octave */
-        octave = tuning.getOctave(newBullet.string, newBullet.fret);
-        if (octave > lowerOctave) {
-          /* search for bullet extensions */
-          bool found = false;
-          for (int alternative = 0; alternative < 5; alternative++) {
-            if (!found) {
-              newBullet.alternative = alternative;
-              String altText = tuning.getIntervalText(newBullet, root);
-              if (altText.contains('9') ||
-                  altText.contains('11') ||
-                  altText.contains('13')) {
-                found = true;
-              }
-            }
-          }
-          if (!found) newBullet.alternative = 0;
-        }
-      }
-      */
+
       items.add(newBullet);
       /* set next root */
       if (nextRoot == '?') {
@@ -182,6 +153,32 @@ class DiagramProvider extends ChangeNotifier {
     return false;
   }
 
+  bool intervalExists(String interval) {
+    for (Bullet bullet in items) {
+      if (bullet.interval == interval) return true;
+    }
+    return false;
+  }
+
+  Bullet? getBulletByInterval(String interval) {
+    for (Bullet bullet in items) {
+      if (bullet.interval == interval) return bullet;
+    }
+    return null;
+  }
+
+  /*int suggestAlternative(int string, int fret) {
+    if (root == '') return 0;
+
+    int rootOctave = tuning.getRootOctave(this);
+    int octave = tuning.getOctave(string, fret);
+
+    if (octave <= rootOctave) return 0;
+
+    String interval = tuning.getInterval(string, fret, root);
+    return tuning.getMainAlternative(interval);
+  }*/
+
   void _resetAlternatives() {
     for (Bullet bullet in items) {
       bullet.alternative = 0;
@@ -190,6 +187,14 @@ class DiagramProvider extends ChangeNotifier {
 
   void _updateBullets() {
     for (Bullet bullet in items) {
+      /* assign absolute octave */
+      bullet.octave = tuning.getOctave(bullet.string, bullet.fret);
+
+      /* assign base interval */
+      if (root != '') {
+        bullet.interval = tuning.getInterval(bullet.string, bullet.fret, root);
+      }
+
       if (bullet.fret == 0) {
         bullet.text = (tuning.capo > 1
             ? 'x'
@@ -212,13 +217,70 @@ class DiagramProvider extends ChangeNotifier {
     items.sort((a, b) {
       if (a.string < b.string) return 1;
       if (a.string > b.string) return -1;
-      return (a.fret < b.fret ? 1 : -1);
+      return (a.fret < b.fret ? -1 : 1);
     });
-    print("---------------------------");
+
+    dump();
+  }
+
+  void dump() {
+    print("----------- Bullets -----------");
     for (Bullet bullet in items) {
       print(
-        "${bullet.string}:${bullet.fret} ${bullet.text} ${bullet.root ? '(R)' : ''} ${bullet.filled ? 'filled' : ''}",
+        "[${bullet.string}:${bullet.fret}] (${bullet.interval}) (octave ${bullet.octave}) \"${bullet.text}\"",
       );
     }
+    print("---------- Intervals ----------");
+    String line = '';
+    for (String interval in getAllIntervals()) {
+      line = "$line $interval";
+    }
+    print(line);
+  }
+
+  List<String> getAllIntervals() {
+    List<String> all = [];
+    int sevenOctave = 10;
+    if (intervalExists('7')) {
+      var b = getBulletByInterval('7');
+      if (b != null) sevenOctave = b.octave;
+    }
+    if (intervalExists('b7')) {
+      var b = getBulletByInterval('b7');
+      if (b != null) sevenOctave = b.octave;
+    }
+
+    for (Bullet bullet in items) {
+      String interval = bullet.interval;
+
+      /* extensions only if 7 or b7 is present */
+      if (bullet.octave > sevenOctave) {
+        /* 9th extensions */
+        if (interval == 'b2') interval = 'b9';
+        if (interval == '2') interval = '9';
+        /* #9 is b3 so it's added only if b3 is already set */
+        if (interval == 'b3' && all.contains('b3')) interval = '#9';
+        /* 11th extensions */
+        if (interval == '4') interval = '11';
+        /* b5 is #11 so it's added only if b5 is already set */
+        if (interval == 'b5' && all.contains('b5')) interval = '#11';
+        /* 13th extensions */
+        if (interval == 'b6') interval = 'b13';
+        if (interval == '6') interval = '13';
+      }
+
+      if (!all.contains(interval)) {
+        all.add(interval);
+      }
+    }
+
+    all.sort((a, b) {
+      return int.parse(a.replaceAll(RegExp(r'[b#]'), '')) <
+              int.parse(b.replaceAll(RegExp(r'[b#]'), ''))
+          ? -1
+          : 1;
+    });
+
+    return all;
   }
 }

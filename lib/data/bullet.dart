@@ -6,5 +6,7 @@ class Bullet {
   bool filled = false;
   bool root = false;
   String text = '';
+  String interval = '';
+  int octave = 0;
   int alternative = 0;
 }

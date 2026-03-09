@@ -76,7 +76,7 @@ class Tuning {
     ['b3', '#9', '#2'],
     ['3'],
     ['4', '11'],
-    ['#4', 'b5', '#11'],
+    ['b5', '#11'],
     ['5'],
     ['b6', 'b13'],
     ['6', '13', 'bb7'],
@@ -136,50 +136,6 @@ class Tuning {
     return _intervals[(end - start) % 12];
   }
 
-  List<String> getAllIntervals(DiagramProvider diagram) {
-    if (diagram.root == '') return [];
-
-    int rootOctave = getRootOctave(diagram);
-
-    List<String> all = ['1'];
-    String interval;
-    for (Bullet bullet in diagram.items) {
-      if (bullet.fret > 0 ||
-          (bullet.fret == 0 && bullet.alternative == 0 && capo == 0)) {
-        int octave = getOctave(bullet.string, bullet.fret);
-
-        interval = getInterval(bullet.string, bullet.fret, diagram.root);
-        if (!all.contains(interval) && interval != '') {
-          /* check for 9th extensions */
-          if (interval == '2' && octave > rootOctave) interval = '9';
-          if (interval == 'b2' && octave > rootOctave) interval = 'b9';
-          if (interval == 'b3' && all.contains('3')) interval = '#9';
-          /* check for 11th extensions */
-          if (interval == '4' && octave > rootOctave) interval = '11';
-          if (interval == 'b5' && octave > rootOctave) interval = '#11';
-          all.add(interval);
-        } else {
-          /* check for 9th extensions */
-          if (interval == 'b2' && all.contains('b2')) all.add('b9');
-          if (interval == '2' && all.contains('2')) all.add('9');
-          if (all.contains('3') || all.contains('b3')) {
-            if (interval == 'b3' && all.contains('b3')) all.add('#9');
-          }
-          /* check for 11th extensions */
-          if (interval == '4' && all.contains('b2')) all.add('b9');
-        }
-      }
-    }
-    all.sort((a, b) {
-      return int.parse(a.replaceAll(RegExp(r'[b#]'), '')) <
-              int.parse(b.replaceAll(RegExp(r'[b#]'), ''))
-          ? -1
-          : 1;
-    });
-
-    return all;
-  }
-
   String getIntervalText(Bullet bullet, String rootNote) {
     int intervalIndex = _intervals.indexOf(
       getInterval(bullet.string, bullet.fret, rootNote),
@@ -191,6 +147,15 @@ class Tuning {
     }
 
     return alternatives[bullet.alternative];
+  }
+
+  int getMainAlternative(String interval) {
+    for (List alternatives in _intervalsAlt) {
+      if (alternatives[0] == interval && alternatives.length > 1) {
+        return 1;
+      }
+    }
+    return 0;
   }
 
   String getChordNameFromIntervals(List<String> intervals) {
