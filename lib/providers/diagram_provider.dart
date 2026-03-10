@@ -328,6 +328,7 @@ class DiagramProvider extends ChangeNotifier {
     /* SUSPENDED 2 and 4 */
     if (sequence == '1 2' || sequence == '1 9') return 'sus2';
     if (sequence == '1 4' || sequence == '1 11') return 'sus4';
+    if (sequence == '1 b7 4' || sequence == '1 b7 11') return '7sus4';
     if (sequence == '1 2 4' || sequence == '1 4 9') return 'sus4/9';
 
     /* TRIADS WITH ADDS 4/9/11/13 */
@@ -360,3 +361,71 @@ class DiagramProvider extends ChangeNotifier {
     return '';
   }
 }
+
+/*
+<?php
+
+class ChordIdentifier {
+    private static $chordLibrary = [
+        // Triadi Base
+        'Major'             => [0, 4, 7],
+        'Minor'             => [0, 3, 7],
+        
+        // --- ACCORDI SUSPENDED ---
+        'Sus2'              => [0, 2, 7], // La terza è sostituita dalla seconda
+        'Sus4'              => [0, 5, 7], // La terza è sostituita dalla quarta
+        '7sus4'             => [0, 5, 7, 10], // Settima di dominante con quarta sospesa
+        
+        // Accordi di Settima
+        'Major 7'           => [0, 4, 7, 11],
+        'Dominant 7'        => [0, 4, 7, 10],
+        'Minor 7'           => [0, 3, 7, 10],
+        
+        // Estensioni (Normalizzate modulo 12)
+        'Major 9'           => [0, 2, 4, 7, 11],
+        'Dominant 9'        => [0, 2, 4, 7, 10],
+        'Minor 9'           => [0, 2, 3, 7, 10],
+        'Dominant 11'       => [0, 2, 4, 5, 7, 10],
+        'Dominant 13'       => [0, 2, 4, 7, 9, 10],
+        
+        // Altri
+        'Diminished'        => [0, 3, 6],
+        'Power Chord'       => [0, 7],
+    ];
+
+    public static function identify(array $intervals) {
+        // 1. Normalizzazione Modulo 12 (gestisce note su ottave diverse)
+        $normalized = array_map(fn($n) => $n % 12, $intervals);
+
+        // 2. Pulizia: rimuove duplicati e ordina in modo crescente
+        sort($normalized);
+        $normalized = array_values(array_unique($normalized));
+
+        // 3. Confronto con la libreria
+        foreach (self::$chordLibrary as $name => $pattern) {
+            sort($pattern);
+            if ($normalized === $pattern) {
+                return $name;
+            }
+        }
+
+        // 4. Gestione Fallback (opzionale): Se non trova nulla, 
+        // potrebbe essere un rivolto o un accordo con note mancanti.
+        return "Accordo non identificato (" . implode(',', $normalized) . ")";
+    }
+}
+
+// --- ESEMPI DI TEST ---
+
+// Test Sus4: Tonica (0), Quarta Giusta (5), Quinta Giusta (7)
+echo "Test Sus4: " . ChordIdentifier::identify([0, 5, 7]) . "\n"; 
+// Output: Sus4
+
+// Test 7sus4: Tonica (0), Quarta (5), Quinta (7), Settima Minore (10)
+echo "Test 7sus4: " . ChordIdentifier::identify([0, 10, 5, 7]) . "\n"; 
+// Output: 7sus4
+
+// Test Sus2: Tonica (0), Seconda Maggiore (2), Quinta Giusta (7)
+echo "Test Sus2: " . ChordIdentifier::identify([0, 2, 7]) . "\n"; 
+// Output: Sus2
+*/
