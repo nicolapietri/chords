@@ -1,5 +1,3 @@
-import 'package:chords/providers/diagram_provider.dart';
-
 import 'bullet.dart';
 
 class Tuning {
@@ -101,19 +99,6 @@ class Tuning {
     return alternatives[bullet.alternative];
   }
 
-  int getRootOctave(DiagramProvider diagram) {
-    /* search lower octave of root */
-    int lowerOctave = 6;
-    int octave;
-    for (Bullet bullet in diagram.items) {
-      if (bullet.root) {
-        octave = diagram.tuning.getOctave(bullet.string, bullet.fret);
-        if (octave < lowerOctave) lowerOctave = octave;
-      }
-    }
-    return lowerOctave;
-  }
-
   int getOctave(int string, int fret) {
     int octave;
     if (string == 6 || string == 5) {
@@ -156,26 +141,5 @@ class Tuning {
       }
     }
     return 0;
-  }
-
-  String getChordNameFromIntervals(List<String> intervals) {
-    String mode = intervals.contains('b3') ? 'm' : '';
-    String seven = intervals.contains('b7')
-        ? '7'
-        : (intervals.contains('7') ? 'maj7' : '');
-    // extended with 9
-    if (intervals.contains('b7') && intervals.contains('9')) {
-      seven = '9';
-    }
-    if (intervals.contains('7') && intervals.contains('9')) {
-      seven = 'maj9';
-    }
-    // extended with 11
-    if (intervals.contains('b7') &&
-        intervals.contains('9') &&
-        intervals.contains('11')) {
-      seven = '11';
-    }
-    return "$mode$seven";
   }
 }

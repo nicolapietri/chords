@@ -167,17 +167,18 @@ class DiagramProvider extends ChangeNotifier {
     return null;
   }
 
-  /*int suggestAlternative(int string, int fret) {
-    if (root == '') return 0;
-
-    int rootOctave = tuning.getRootOctave(this);
-    int octave = tuning.getOctave(string, fret);
-
-    if (octave <= rootOctave) return 0;
-
-    String interval = tuning.getInterval(string, fret, root);
-    return tuning.getMainAlternative(interval);
-  }*/
+  int getRootOctave() {
+    /* search lower octave of root */
+    int lowerOctave = 6;
+    int octave;
+    for (Bullet bullet in items) {
+      if (bullet.root) {
+        octave = tuning.getOctave(bullet.string, bullet.fret);
+        if (octave < lowerOctave) lowerOctave = octave;
+      }
+    }
+    return lowerOctave;
+  }
 
   void _resetAlternatives() {
     for (Bullet bullet in items) {
@@ -249,6 +250,7 @@ class DiagramProvider extends ChangeNotifier {
       var b = getBulletByInterval('b7');
       if (b != null) sevenOctave = b.octave;
     }
+    int rootOctave = getRootOctave();
 
     for (Bullet bullet in items) {
       String interval = bullet.interval;
@@ -259,7 +261,9 @@ class DiagramProvider extends ChangeNotifier {
         if (interval == 'b2') interval = 'b9';
         if (interval == '2') interval = '9';
         /* #9 is b3 so it's added only if b3 is already set */
-        if (interval == 'b3' && all.contains('b3')) interval = '#9';
+        if (interval == 'b3' && (all.contains('b3') || all.contains('3'))) {
+          interval = '#9';
+        }
         /* 11th extensions */
         if (interval == '4') interval = '11';
         /* b5 is #11 so it's added only if b5 is already set */
@@ -267,6 +271,21 @@ class DiagramProvider extends ChangeNotifier {
         /* 13th extensions */
         if (interval == 'b6') interval = 'b13';
         if (interval == '6') interval = '13';
+      } else {
+        /* 13th without 7 */
+        if (all.contains('6') || all.contains('b6')) {
+          if (interval == 'b6') interval = 'b13';
+          if (interval == '6') interval = '13';
+        }
+      }
+
+      /* extensions based on octave only */
+      if (bullet.octave > rootOctave) {
+        /* 9th extensions */
+        if (interval == 'b2') interval = 'b9';
+        if (interval == '2') interval = '9';
+        /* #9 is b3 so it's added only if b3 is already set */
+        if (interval == 'b3' && all.contains('b3')) interval = '#9';
       }
 
       if (!all.contains(interval)) {
@@ -282,5 +301,62 @@ class DiagramProvider extends ChangeNotifier {
     });
 
     return all;
+  }
+
+  String sequence(List<String> intervals) {
+    return intervals.reduce((a, b) => "$a $b").trim();
+  }
+
+  String getChordNameFromIntervals(List<String> intervals) {
+    intervals.remove('5');
+    if (intervals.isEmpty) return '';
+    String mode = intervals.contains('b3') ? 'm' : '';
+    String sequence = this.sequence(intervals);
+
+    /* TRIADS (perfect-fifth independant) */
+    /* major 1 3 5 */
+    if (sequence == '1 3') return '';
+    /* minor 1 b3 5 */
+    if (sequence == '1 b3') return 'm';
+    /* generic flat-five */
+    if (sequence == '1 b5') return 'dim';
+    /* major flat-five 1 3 b5 */
+    if (sequence == '1 3 b5') return '(b5)';
+    /* minor flat-five 1 b3 b5 */
+    if (sequence == '1 b3 b5') return 'dim';
+
+    /* SUSPENDED 2 and 4 */
+    if (sequence == '1 2' || sequence == '1 9') return 'sus2';
+    if (sequence == '1 4' || sequence == '1 11') return 'sus4';
+    if (sequence == '1 2 4' || sequence == '1 4 9') return 'sus4/9';
+
+    /* TRIADS WITH ADDS 4/9/11/13 */
+    String sequenceNo3 = this.sequence(
+      intervals.where((e) => e != '3' && e != '3b').toList(),
+    );
+    if (sequenceNo3 == '1 4') return "${mode}add4";
+    if (sequenceNo3 == '1 b9') return "$mode(b9)";
+    if (sequenceNo3 == '1 9') return "${mode}add9";
+    if (sequenceNo3 == '1 #9') return "${mode}add#9";
+    if (sequenceNo3 == '1 11') return "${mode}add11";
+    if (sequenceNo3 == '1 #11') return "${mode}add#11";
+    if (sequenceNo3 == '1 b13') return "$mode(b13)";
+    if (sequenceNo3 == '1 13') return "${mode}add13";
+
+    /* QUADRIADS */
+
+    /* major seven 1 3 5 7 */
+    if (sequence == '1 3 7') return 'maj7';
+    /* minor seven 1 b3 5 7 */
+    if (sequence == '1 b3 b7') return 'm7';
+    /* dominant seven 1 b3 5 7 */
+    if (sequence == '1 3 b7') return '7';
+    /* major sixth 1 b3 6 */
+    if (sequence == '1 3 6') return '6';
+    /* minor sixth 1 b3 6 */
+    if (sequence == '1 b3 6') return 'm6';
+    /* diminished seven 1 b3 b5 6 */
+    if (sequence == '1 b3 b5 6') return 'dim7';
+    return '';
   }
 }
