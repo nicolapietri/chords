@@ -21,7 +21,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     AppbarComponent appBar = AppbarComponent(title: 'Chords');
     BottomAppBarComponent bottomAppBar = BottomAppBarComponent();
-    double scale = 0.5;
+    double scale = 1.0;
     double baseFontSize = 21 * scale;
     double safeWidth = MediaQuery.sizeOf(context).width * scale;
     double safeHeight =

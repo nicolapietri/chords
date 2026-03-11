@@ -179,6 +179,22 @@ class DiagramComponent extends StatelessWidget {
             ),
           ),
         ),
+        Positioned(
+          left: px(left),
+          top: py(2),
+          child: SizedBox(
+            width: px(10),
+            child: Center(
+              child: Text(
+                diagram.sequence(diagram.getAllIntervals()),
+                style: TextStyle(
+                  fontSize: fontSize * 0.85,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

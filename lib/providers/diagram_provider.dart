@@ -31,6 +31,7 @@ class DiagramProvider extends ChangeNotifier {
 
   DiagramProvider majorScale() {
     reset();
+    nextRoot = '';
 
     items.add(Bullet(string: 6, fret: 3));
     items.add(Bullet(string: 6, fret: 5));
@@ -59,6 +60,7 @@ class DiagramProvider extends ChangeNotifier {
 
   DiagramProvider minorNaturalScale() {
     reset();
+    nextRoot = '';
 
     items.add(Bullet(string: 6, fret: 3)); //5
     items.add(Bullet(string: 6, fret: 4)); //b6
@@ -88,6 +90,7 @@ class DiagramProvider extends ChangeNotifier {
 
   DiagramProvider minorHarmonicScale() {
     reset();
+    nextRoot = '';
 
     items.add(Bullet(string: 6, fret: 3)); //5
     items.add(Bullet(string: 6, fret: 4)); //b6
@@ -117,19 +120,20 @@ class DiagramProvider extends ChangeNotifier {
 
   DiagramProvider minorMelodicScale() {
     reset();
+    nextRoot = '';
 
     items.add(Bullet(string: 6, fret: 3)); //5
     items.add(Bullet(string: 6, fret: 5)); //6
-    items.add(Bullet(string: 6, fret: 7)); //7
     //--
+    items.add(Bullet(string: 5, fret: 2)); //7
     items.add(Bullet(string: 5, fret: 3)); //1
     items.add(Bullet(string: 5, fret: 5)); //2
     items.add(Bullet(string: 5, fret: 6)); //b3
     //--
     items.add(Bullet(string: 4, fret: 3)); //4
     items.add(Bullet(string: 4, fret: 5)); //5
-    items.add(Bullet(string: 4, fret: 7)); //6
     //--
+    items.add(Bullet(string: 3, fret: 2)); //6
     items.add(Bullet(string: 3, fret: 4)); //7
     items.add(Bullet(string: 3, fret: 5)); //8
     //--
@@ -368,6 +372,7 @@ class DiagramProvider extends ChangeNotifier {
   }
 
   String sequence(List<String> intervals) {
+    if (intervals.isEmpty) return '';
     return intervals.reduce((a, b) => "$a $b").trim();
   }
 
@@ -413,6 +418,9 @@ class DiagramProvider extends ChangeNotifier {
     /* pure 9th, 11th and 13th dominant or major*/
     if (sequenceNoMode == '1 b7 9') return "${mode}9"; // dominant 9
     if (sequenceNoMode == '1 7 9') return mode == 'm' ? 'm(maj9)' : 'maj9';
+    if (sequenceNoMode == '1 7 b9') {
+      return mode == 'm' ? 'm(maj7)(b9)' : 'maj7(b9)';
+    }
     if (sequenceNoMode == '1 7 11') return "${mode}11";
     if (sequenceNoMode == '1 7 13') return "${mode}13";
 
@@ -431,6 +439,8 @@ class DiagramProvider extends ChangeNotifier {
     if (sequence == '1 b3 6') return 'm6';
     /* diminished seven 1 b3 b5 6 */
     if (sequence == '1 b3 b5 6') return 'dim7';
+    /* half diminished 1 b3 b5 b7 */
+    if (sequence == '1 b3 b5 b7') return 'm7b5';
     return '';
   }
 }
