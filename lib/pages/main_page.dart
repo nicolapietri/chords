@@ -21,16 +21,26 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     AppbarComponent appBar = AppbarComponent(title: 'Chords');
     BottomAppBarComponent bottomAppBar = BottomAppBarComponent();
-    double safeWidth = MediaQuery.sizeOf(context).width;
+    double scale = 0.5;
+    double baseFontSize = 21 * scale;
+    double safeWidth = MediaQuery.sizeOf(context).width * scale;
     double safeHeight =
-        MediaQuery.sizeOf(context).height -
-        appBar.preferredSize.height -
-        kBottomNavigationBarHeight;
+        (MediaQuery.sizeOf(context).height -
+            appBar.preferredSize.height -
+            kBottomNavigationBarHeight) *
+        scale;
 
     return Scaffold(
       appBar: appBar,
       drawer: DrawerComponent(),
-      body: SafeArea(child: NeckComponent(size: Size(safeWidth, safeHeight))),
+      body: SafeArea(
+        child: Center(
+          child: NeckComponent(
+            size: Size(safeWidth, safeHeight),
+            baseFontSize: baseFontSize,
+          ),
+        ),
+      ),
       bottomNavigationBar: bottomAppBar,
     );
   }

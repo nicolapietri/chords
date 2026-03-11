@@ -4,15 +4,19 @@ import '../providers/diagram_provider.dart';
 
 class DiagramComponent extends StatelessWidget {
   final Size size;
+  final double fontSize;
   final double ratio = 1.4;
 
   /* units */
   final int left = 3;
   final int top = 4;
   final int frets = 7;
-  final double fontSize = 21;
 
-  const DiagramComponent({super.key, required this.size});
+  const DiagramComponent({
+    super.key,
+    required this.size,
+    required this.fontSize,
+  });
 
   double dx() => size.width / 16;
   double dy() => dx() * ratio;
@@ -69,7 +73,7 @@ class DiagramComponent extends StatelessWidget {
               ? Colors.red.shade900
               : (e.filled ? Colors.black87 : Colors.white);
           var borderColor = (e.filled || e.root) ? fillColor : Colors.black87;
-          double borderWidth = 4;
+          double borderWidth = fontSize / 5;
           var textColor = (e.filled || e.root) ? Colors.white : Colors.black87;
 
           /* special for filled dots in dark mode */

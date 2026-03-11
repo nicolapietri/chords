@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/diagram_provider.dart';
-import 'fretboard_component.dart';
 import 'diagram_component.dart';
 
 class NeckComponent extends StatelessWidget {
-  const NeckComponent({super.key, required this.size});
+  const NeckComponent({
+    super.key,
+    required this.size,
+    required this.baseFontSize,
+  });
 
   final Size size;
+  final double baseFontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -22,17 +26,7 @@ class NeckComponent extends StatelessWidget {
       child: Consumer<DiagramProvider>(
         builder: (context, model, widget) => Stack(
           children: [
-            FretboardComponent(
-              size: canvasSize,
-              /*onTap: (position) {
-                diagram.addBulletAtOffset(
-                  position,
-                  size.width,
-                  size.height - kBottomNavigationBarHeight,
-                );
-              },*/
-            ),
-            DiagramComponent(size: canvasSize),
+            DiagramComponent(size: canvasSize, fontSize: baseFontSize),
           ],
         ),
       ),
