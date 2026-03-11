@@ -142,6 +142,22 @@ class DrawerComponent extends StatelessWidget {
                   diagram.minorNaturalScale();
                 },
               ),
+              ListTile(
+                leading: Icon(Icons.music_note),
+                title: Text('Minor harmonic scale'),
+                onTap: () {
+                  Navigator.pop(context);
+                  diagram.minorHarmonicScale();
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.music_note),
+                title: Text('Minor melodic scale'),
+                onTap: () {
+                  Navigator.pop(context);
+                  diagram.minorMelodicScale();
+                },
+              ),
               SizedBox(height: 10),
               Divider(),
               SizedBox(height: 10),

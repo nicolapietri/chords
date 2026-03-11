@@ -60,28 +60,86 @@ class DiagramProvider extends ChangeNotifier {
   DiagramProvider minorNaturalScale() {
     reset();
 
-    items.add(Bullet(string: 6, fret: 3));
-    items.add(Bullet(string: 6, fret: 4));
-    items.add(Bullet(string: 6, fret: 6));
+    items.add(Bullet(string: 6, fret: 3)); //5
+    items.add(Bullet(string: 6, fret: 4)); //b6
+    items.add(Bullet(string: 6, fret: 6)); //b7
     //--
-    items.add(Bullet(string: 5, fret: 3));
-    items.add(Bullet(string: 5, fret: 5));
-    items.add(Bullet(string: 5, fret: 6));
+    items.add(Bullet(string: 5, fret: 3)); //1
+    items.add(Bullet(string: 5, fret: 5)); //2
+    items.add(Bullet(string: 5, fret: 6)); //b3
     //--
-    items.add(Bullet(string: 4, fret: 3));
-    items.add(Bullet(string: 4, fret: 5));
-    items.add(Bullet(string: 4, fret: 6));
+    items.add(Bullet(string: 4, fret: 3)); //4
+    items.add(Bullet(string: 4, fret: 5)); //5
+    items.add(Bullet(string: 4, fret: 6)); //b6
     //--
-    items.add(Bullet(string: 3, fret: 3));
-    items.add(Bullet(string: 3, fret: 5));
+    items.add(Bullet(string: 3, fret: 3)); //b7
+    items.add(Bullet(string: 3, fret: 5)); //8
     //--
-    items.add(Bullet(string: 2, fret: 3));
-    items.add(Bullet(string: 2, fret: 4));
-    items.add(Bullet(string: 2, fret: 6));
+    items.add(Bullet(string: 2, fret: 3)); //2
+    items.add(Bullet(string: 2, fret: 4)); //b3
+    items.add(Bullet(string: 2, fret: 6)); //4
     //--
-    items.add(Bullet(string: 1, fret: 3));
-    items.add(Bullet(string: 1, fret: 4));
-    items.add(Bullet(string: 1, fret: 6));
+    items.add(Bullet(string: 1, fret: 3)); //5
+    items.add(Bullet(string: 1, fret: 4)); //b6
+    items.add(Bullet(string: 1, fret: 6)); //b7
+
+    return setRoot('c').setRelative(relative);
+  }
+
+  DiagramProvider minorHarmonicScale() {
+    reset();
+
+    items.add(Bullet(string: 6, fret: 3)); //5
+    items.add(Bullet(string: 6, fret: 4)); //b6
+    items.add(Bullet(string: 6, fret: 7)); //7
+    //--
+    items.add(Bullet(string: 5, fret: 3)); //1
+    items.add(Bullet(string: 5, fret: 5)); //2
+    items.add(Bullet(string: 5, fret: 6)); //b3
+    //--
+    items.add(Bullet(string: 4, fret: 3)); //4
+    items.add(Bullet(string: 4, fret: 5)); //5
+    items.add(Bullet(string: 4, fret: 6)); //b6
+    //--
+    items.add(Bullet(string: 3, fret: 4)); //7
+    items.add(Bullet(string: 3, fret: 5)); //8
+    //--
+    items.add(Bullet(string: 2, fret: 3)); //2
+    items.add(Bullet(string: 2, fret: 4)); //b3
+    items.add(Bullet(string: 2, fret: 6)); //4
+    //--
+    items.add(Bullet(string: 1, fret: 3)); //5
+    items.add(Bullet(string: 1, fret: 4)); //b6
+    items.add(Bullet(string: 1, fret: 7)); //7
+
+    return setRoot('c').setRelative(relative);
+  }
+
+  DiagramProvider minorMelodicScale() {
+    reset();
+
+    items.add(Bullet(string: 6, fret: 3)); //5
+    items.add(Bullet(string: 6, fret: 5)); //6
+    items.add(Bullet(string: 6, fret: 7)); //7
+    //--
+    items.add(Bullet(string: 5, fret: 3)); //1
+    items.add(Bullet(string: 5, fret: 5)); //2
+    items.add(Bullet(string: 5, fret: 6)); //b3
+    //--
+    items.add(Bullet(string: 4, fret: 3)); //4
+    items.add(Bullet(string: 4, fret: 5)); //5
+    items.add(Bullet(string: 4, fret: 7)); //6
+    //--
+    items.add(Bullet(string: 3, fret: 4)); //7
+    items.add(Bullet(string: 3, fret: 5)); //8
+    //--
+    items.add(Bullet(string: 2, fret: 3)); //2
+    items.add(Bullet(string: 2, fret: 4)); //b3
+    items.add(Bullet(string: 2, fret: 6)); //4
+    //--
+    items.add(Bullet(string: 1, fret: 3)); //5
+    items.add(Bullet(string: 1, fret: 5)); //6
+    items.add(Bullet(string: 1, fret: 7)); //7
 
     return setRoot('c').setRelative(relative);
   }
