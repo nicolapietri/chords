@@ -16,9 +16,9 @@ class DiagramProvider extends ChangeNotifier {
   DiagramProvider reset() {
     items.clear();
     root = '';
-    nextRoot = '';
     relative = true;
     tuning.capo = 0;
+    nextIsRoot();
     notifyListeners();
     return this;
   }
@@ -114,7 +114,12 @@ class DiagramProvider extends ChangeNotifier {
   }
 
   DiagramProvider rotateBulletAlternative(Bullet bullet) {
-    bullet.alternative++;
+    if (nextRoot == '?') {
+      nextRoot = '';
+      root = tuning.getNote(bullet.string, bullet.fret);
+    } else {
+      bullet.alternative++;
+    }
     _updateBullets();
     notifyListeners();
     return this;
@@ -225,7 +230,7 @@ class DiagramProvider extends ChangeNotifier {
   }
 
   void dump() {
-    print("----------- Bullets -----------");
+    /*print("----------- Bullets -----------");
     for (Bullet bullet in items) {
       print(
         "[${bullet.string}:${bullet.fret}] (${bullet.interval}) (octave ${bullet.octave}) \"${bullet.text}\"",
@@ -237,6 +242,7 @@ class DiagramProvider extends ChangeNotifier {
       line = "$line $interval";
     }
     print(line);
+    */
   }
 
   List<String> getAllIntervals() {
@@ -332,22 +338,31 @@ class DiagramProvider extends ChangeNotifier {
     if (sequence == '1 2 4' || sequence == '1 4 9') return 'sus4/9';
 
     /* TRIADS WITH ADDS 4/9/11/13 */
-    String sequenceNo3 = this.sequence(
-      intervals.where((e) => e != '3' && e != '3b').toList(),
+    String sequenceNoMode = this.sequence(
+      intervals.where((e) => e != '3' && e != 'b3').toList(),
     );
-    if (sequenceNo3 == '1 4') return "${mode}add4";
-    if (sequenceNo3 == '1 b9') return "$mode(b9)";
-    if (sequenceNo3 == '1 9') return "${mode}add9";
-    if (sequenceNo3 == '1 #9') return "${mode}add#9";
-    if (sequenceNo3 == '1 11') return "${mode}add11";
-    if (sequenceNo3 == '1 #11') return "${mode}add#11";
-    if (sequenceNo3 == '1 b13') return "$mode(b13)";
-    if (sequenceNo3 == '1 13') return "${mode}add13";
+    /* additions */
+    if (sequenceNoMode == '1 4') return mode == 'm' ? 'm(add4)' : 'add4';
+    if (sequenceNoMode == '1 b9') return "$mode(b9)";
+    if (sequenceNoMode == '1 9') return mode == 'm' ? 'm(add9)' : 'add9';
+    if (sequenceNoMode == '1 #9') return mode == 'm' ? 'm(add#9)' : 'add#9';
+    if (sequenceNoMode == '1 6 9') return "${mode}6/9";
+    if (sequenceNoMode == '1 11') return mode == 'm' ? 'm(add11)' : 'add11';
+    if (sequenceNoMode == '1 #11') return mode == 'm' ? 'm(add#11)' : 'add#11';
+    if (sequenceNoMode == '1 b13') return "$mode(b13)";
+    if (sequenceNoMode == '1 13') return mode == 'm' ? 'm(add13)' : 'add13';
+
+    /* pure 9th, 11th and 13th dominant or major*/
+    if (sequenceNoMode == '1 b7 9') return "${mode}9"; // dominant 9
+    if (sequenceNoMode == '1 7 9') return mode == 'm' ? 'm(maj9)' : 'maj9';
+    if (sequenceNoMode == '1 7 11') return "${mode}11";
+    if (sequenceNoMode == '1 7 13') return "${mode}13";
 
     /* QUADRIADS */
 
     /* major seven 1 3 5 7 */
     if (sequence == '1 3 7') return 'maj7';
+    if (sequence == '1 b3 7') return 'm(maj7)';
     /* minor seven 1 b3 5 7 */
     if (sequence == '1 b3 b7') return 'm7';
     /* dominant seven 1 b3 5 7 */
